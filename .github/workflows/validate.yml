@@ -1,0 +1,23 @@
+name: Validate HomeLab catalog
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate and build catalog
+        run: ./scripts/validate-repository.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: homelab-catalog
+          path: dist/
+          if-no-files-found: error

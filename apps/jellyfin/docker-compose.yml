@@ -1,0 +1,39 @@
+name: jellyfin
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:10.11.11
+    restart: unless-stopped
+    user: "${PUID:-1000}:${PGID:-1000}"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    ports:
+      - "8096:8096/tcp"
+    volumes:
+      - "${APP_DATA_DIR:-/DATA/AppData/jellyfin}/config:/config"
+      - "${MEDIA_DIR:-/DATA/Media}:/media:ro"
+x-casaos:
+  id: jellyfin
+  version: "10.11.11"
+  architectures:
+    - amd64
+    - arm64
+  main: jellyfin
+  author: AlcoIT Software
+  category: Media
+  description:
+    en_us: Private media system.
+    es_es: Sistema privado de contenido multimedia.
+  developer: Jellyfin
+  icon: https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/Jellyfin/icon.png
+  index: /
+  port_map: "8096"
+  scheme: http
+  store_app_id: com.alcoit.jellyfin
+  tagline:
+    en_us: Your media, under your control.
+    es_es: Tu contenido multimedia bajo tu control.
+  title:
+    en_us: Jellyfin
+    es_es: Jellyfin

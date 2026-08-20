@@ -1,0 +1,113 @@
+#!/usr/bin/env python3
+"""Build the canonical, deterministic HomeLab application catalog."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+from pathlib import Path
+import re
+from urllib.parse import urlparse
+
+
+ROOT = Path(__file__).resolve().parents[1]
+IDENTIFIER = re.compile(r"^[a-z0-9][a-z0-9-]{1,62}$")
+VERSION = re.compile(r"^[0-9]+(?:\.[0-9]+){1,3}(?:[-+][A-Za-z0-9.-]+)?$")
+IMAGE = re.compile(r"^\s*image:\s*([^\s]+)\s*$", re.MULTILINE)
+REQUIRED_METADATA = {"id", "name", "version", "icon"}
+
+
+def canonical(value: object) -> bytes:
+    return json.dumps(value, sort_keys=True, separators=(",", ":")).encode()
+
+
+def load_json(path: Path) -> dict:
+    value = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(value, dict):
+        raise ValueError(f"{path}: expected an object")
+    return value
+
+
+def validate_https_url(value: object, field: str) -> str:
+    text = str(value)
+    parsed = urlparse(text)
+    if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password:
+        raise ValueError(f"{field} must be an HTTPS URL without credentials")
+    return text
+
+
+def load_application(directory: Path) -> dict:
+    manifest_path = directory / "manifest.json"
+    compose_path = directory / "docker-compose.yml"
+    metadata = load_json(manifest_path)
+    if set(metadata) != REQUIRED_METADATA:
+        raise ValueError(f"{manifest_path}: expected fields {sorted(REQUIRED_METADATA)}")
+    app_id = str(metadata["id"])
+    if directory.name != app_id or not IDENTIFIER.fullmatch(app_id):
+        raise ValueError(f"{manifest_path}: id must match its directory")
+    if not isinstance(metadata["name"], str) or not metadata["name"].strip():
+        raise ValueError(f"{manifest_path}: name must be non-empty")
+    if not VERSION.fullmatch(str(metadata["version"])):
+        raise ValueError(f"{manifest_path}: invalid version")
+    validate_https_url(metadata["icon"], f"{manifest_path}: icon")
+
+    compose = compose_path.read_text(encoding="utf-8")
+    if not compose.endswith("\n"):
+        raise ValueError(f"{compose_path}: file must end with a newline")
+    if "x-casaos:" not in compose:
+        raise ValueError(f"{compose_path}: x-casaos metadata is required")
+    if not re.search(rf"^  id:\s*{re.escape(app_id)}\s*$", compose, re.MULTILINE):
+        raise ValueError(f"{compose_path}: x-casaos.id must match the application id")
+    if not re.search(
+        rf'^  version:\s*["\']?{re.escape(str(metadata["version"]))}["\']?\s*$',
+        compose,
+        re.MULTILINE,
+    ):
+        raise ValueError(f"{compose_path}: x-casaos.version must match the manifest")
+    if "privileged: true" in compose.lower():
+        raise ValueError(f"{compose_path}: privileged containers are forbidden")
+    images = IMAGE.findall(compose)
+    if not images:
+        raise ValueError(f"{compose_path}: at least one image is required")
+    for image in images:
+        if image.endswith(":latest") or (":" not in image and "@sha256:" not in image):
+            raise ValueError(f"{compose_path}: image must be pinned: {image}")
+    return {**metadata, "compose": compose}
+
+
+def build() -> dict:
+    release = load_json(ROOT / "catalog.release.json")
+    if set(release) != {"schema_version", "version"}:
+        raise ValueError("catalog.release.json has unsupported fields")
+    if release["schema_version"] != 1 or not VERSION.fullmatch(str(release["version"])):
+        raise ValueError("catalog.release.json is invalid")
+    applications = [
+        load_application(path)
+        for path in sorted((ROOT / "apps").iterdir())
+        if path.is_dir()
+    ]
+    identifiers = [app["id"] for app in applications]
+    if not applications or len(identifiers) != len(set(identifiers)):
+        raise ValueError("catalog must contain unique applications")
+    return {**release, "apps": applications}
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output", type=Path, default=ROOT / "dist" / "catalog.json")
+    arguments = parser.parse_args()
+    catalog = build()
+    arguments.output.parent.mkdir(parents=True, exist_ok=True)
+    payload = json.dumps(catalog, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
+    arguments.output.write_text(payload, encoding="utf-8")
+    digest = "sha256:" + hashlib.sha256(payload.encode()).hexdigest()
+    arguments.output.with_suffix(arguments.output.suffix + ".sha256").write_text(
+        digest + "\n", encoding="utf-8"
+    )
+    print(f"Built {arguments.output} ({len(catalog['apps'])} applications, {digest})")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

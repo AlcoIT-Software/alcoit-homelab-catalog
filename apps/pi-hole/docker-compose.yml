@@ -1,0 +1,44 @@
+name: pi-hole
+services:
+  pi-hole:
+    image: pihole/pihole:2026.05.0
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "8081:80/tcp"
+    environment:
+      TZ: "${TZ:-UTC}"
+      FTLCONF_webserver_api_password: "${PIHOLE_PASSWORD:?Set PIHOLE_PASSWORD}"
+    volumes:
+      - "${APP_DATA_DIR:-/DATA/AppData/pi-hole}/etc-pihole:/etc/pihole"
+x-casaos:
+  id: pi-hole
+  version: "2026.05.0"
+  architectures:
+    - amd64
+    - arm64
+  main: pi-hole
+  author: AlcoIT Software
+  category: Network
+  description:
+    en_us: Network-wide DNS filtering.
+    es_es: Filtrado DNS para toda la red.
+  developer: Pi-hole
+  icon: https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/Pi-hole/icon.png
+  index: /admin
+  port_map: "8081"
+  scheme: http
+  store_app_id: com.alcoit.pihole
+  tagline:
+    en_us: Network-wide ad blocking.
+    es_es: Bloqueo de publicidad para toda la red.
+  title:
+    en_us: Pi-hole
+    es_es: Pi-hole

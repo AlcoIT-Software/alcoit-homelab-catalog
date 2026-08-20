@@ -1,0 +1,12 @@
+# Focus this graph on catalog ownership, validation, and application definitions.
+graphify-out/
+.git/
+.github/
+tests/
+dist/
+**/__pycache__/
+*.py[cod]
+*.png
+*.jpg
+*.jpeg
+*.webp
