@@ -36,12 +36,9 @@ are not a production release mechanism.
 
 Every validated push to `main` verifies that the checked-in artifact matches
 the catalog sources, downloads it from GitHub through a URL fixed to that
-commit SHA, verifies its SHA-256, and dispatches the verified URL and digest to
-`alcoit-installations` for review. This uses GitHub repository storage and does
-not require paid object storage. The repository must be public so clients can
-download the catalog without credentials.
-
-Repository secrets:
-
-- `LOCKFILE_DISPATCH_TOKEN`: fine-grained token scoped to
-  `AlcoIT-Software/alcoit-installations` with `Contents: write`.
+commit SHA, and verifies its SHA-256. HomeLab Service polls the public
+`main/catalog.json` and `main/catalog.json.sha256` pair, activates only a
+consistent validated download, and keeps serving the last valid catalog when a
+refresh fails. This uses GitHub repository storage and does not require paid
+object storage or dispatch credentials. The repository must be public so
+clients can download the catalog without credentials.

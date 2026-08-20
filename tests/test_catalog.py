@@ -18,13 +18,14 @@ loader.exec_module(build_catalog)
 
 
 class CatalogTests(unittest.TestCase):
-    def test_release_workflow_is_immutable_and_promotes_verified_catalog(self) -> None:
+    def test_release_workflow_verifies_immutable_public_catalog(self) -> None:
         workflow = (ROOT / ".github/workflows/validate.yml").read_text()
         self.assertIn("cmp --silent catalog.json dist/catalog.json", workflow)
         self.assertIn("raw.githubusercontent.com/${GITHUB_REPOSITORY}/${GITHUB_SHA}/catalog.json", workflow)
         self.assertIn('test "$actual" = "$digest"', workflow)
-        self.assertIn('event_type: "catalog-published"', workflow)
-        self.assertIn("repos/AlcoIT-Software/alcoit-installations/dispatches", workflow)
+        self.assertNotIn('event_type: "catalog-published"', workflow)
+        self.assertNotIn("/dispatches", workflow)
+        self.assertNotIn("LOCKFILE_DISPATCH_TOKEN", workflow)
         self.assertNotRegex(workflow, r"uses: [^\n]+@v[0-9]+")
 
     def test_checked_in_catalog_matches_sources(self) -> None:
