@@ -14,6 +14,8 @@ or Raspberry Pi installer code.
 apps/<application>/manifest.json
 apps/<application>/docker-compose.yml
 catalog.release.json
+catalog.json
+catalog.json.sha256
 scripts/build-catalog
 ```
 
@@ -24,7 +26,22 @@ scripts/build-catalog
 ./scripts/build-catalog
 ```
 
-The output is `dist/catalog.json`. Its SHA-256 is written to
-`dist/catalog.json.sha256`. A production service release must select the
-catalog by HTTPS URL and this digest; mutable branch URLs are not a production
-release mechanism.
+The validation output is `dist/catalog.json`. The same generated catalog and
+its SHA-256 are checked into the repository as `catalog.json` and
+`catalog.json.sha256`. A production service release selects the catalog by an
+HTTPS URL tied to an exact commit SHA and by this digest; mutable branch URLs
+are not a production release mechanism.
+
+## Release automation
+
+Every validated push to `main` verifies that the checked-in artifact matches
+the catalog sources, downloads it from GitHub through a URL fixed to that
+commit SHA, verifies its SHA-256, and dispatches the verified URL and digest to
+`alcoit-installations` for review. This uses GitHub repository storage and does
+not require paid object storage. The repository must be public so clients can
+download the catalog without credentials.
+
+Repository secrets:
+
+- `LOCKFILE_DISPATCH_TOKEN`: fine-grained token scoped to
+  `AlcoIT-Software/alcoit-installations` with `Contents: write`.

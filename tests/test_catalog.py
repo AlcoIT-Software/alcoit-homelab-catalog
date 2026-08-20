@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.machinery
 import importlib.util
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -17,6 +18,19 @@ loader.exec_module(build_catalog)
 
 
 class CatalogTests(unittest.TestCase):
+    def test_release_workflow_is_immutable_and_promotes_verified_catalog(self) -> None:
+        workflow = (ROOT / ".github/workflows/validate.yml").read_text()
+        self.assertIn("cmp --silent catalog.json dist/catalog.json", workflow)
+        self.assertIn("raw.githubusercontent.com/${GITHUB_REPOSITORY}/${GITHUB_SHA}/catalog.json", workflow)
+        self.assertIn('test "$actual" = "$digest"', workflow)
+        self.assertIn('event_type: "catalog-published"', workflow)
+        self.assertIn("repos/AlcoIT-Software/alcoit-installations/dispatches", workflow)
+        self.assertNotRegex(workflow, r"uses: [^\n]+@v[0-9]+")
+
+    def test_checked_in_catalog_matches_sources(self) -> None:
+        checked_in = json.loads((ROOT / "catalog.json").read_text())
+        self.assertEqual(checked_in, build_catalog.build())
+
     def test_catalog_contains_every_application_directory(self) -> None:
         catalog = build_catalog.build()
         expected = sorted(path.name for path in (ROOT / "apps").iterdir() if path.is_dir())

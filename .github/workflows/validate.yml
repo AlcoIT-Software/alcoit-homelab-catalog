@@ -1,4 +1,4 @@
-name: Validate HomeLab catalog
+name: Validate and publish HomeLab catalog
 
 on:
   push:
@@ -9,15 +9,76 @@ on:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Validate and build catalog
         run: ./scripts/validate-repository.sh
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: homelab-catalog
           path: dist/
           if-no-files-found: error
+
+  publish:
+    name: Verify and promote immutable catalog artifact
+    if: github.event_name != 'pull_request'
+    needs: validate
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    concurrency:
+      group: homelab-catalog-release
+      cancel-in-progress: false
+    env:
+      LOCKFILE_DISPATCH_TOKEN: ${{ secrets.LOCKFILE_DISPATCH_TOKEN }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      - name: Require dispatch token
+        run: test -n "$LOCKFILE_DISPATCH_TOKEN"
+
+      - name: Build catalog
+        run: ./scripts/validate-repository.sh
+
+      - name: Verify checked-in catalog
+        run: |
+          cmp --silent catalog.json dist/catalog.json
+          cmp --silent catalog.json.sha256 dist/catalog.json.sha256
+
+      - name: Verify immutable public URL
+        id: publish
+        shell: bash
+        run: |
+          release="$(python3 -c 'import json; print(json.load(open("catalog.release.json"))["version"])')"
+          digest="$(tr -d '\n' < catalog.json.sha256)"
+          public_url="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${GITHUB_SHA}/catalog.json"
+          curl --fail --location --retry 5 --retry-all-errors "$public_url" --output /tmp/public-catalog.json
+          actual="sha256:$(sha256sum /tmp/public-catalog.json | cut -d' ' -f1)"
+          test "$actual" = "$digest"
+          echo "release=$release" >> "$GITHUB_OUTPUT"
+          echo "digest=$digest" >> "$GITHUB_OUTPUT"
+          echo "url=$public_url" >> "$GITHUB_OUTPUT"
+
+      - name: Request catalog promotion
+        env:
+          GH_TOKEN: ${{ secrets.LOCKFILE_DISPATCH_TOKEN }}
+          CATALOG_DIGEST: ${{ steps.publish.outputs.digest }}
+          CATALOG_RELEASE: ${{ steps.publish.outputs.release }}
+          CATALOG_URL: ${{ steps.publish.outputs.url }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg digest "$CATALOG_DIGEST" \
+            --arg release "$CATALOG_RELEASE" \
+            --arg url "$CATALOG_URL" \
+            --arg source_repository "$GITHUB_REPOSITORY" \
+            --arg source_sha "$GITHUB_SHA" \
+            '{event_type: "catalog-published", client_payload: {digest: $digest, release: $release, url: $url, source_repository: $source_repository, source_sha: $source_sha}}' \
+            > dist/dispatch.json
+          gh api --method POST repos/AlcoIT-Software/alcoit-installations/dispatches --input dist/dispatch.json
+
+      - name: Report immutable catalog reference
+        run: echo "Published ${{ steps.publish.outputs.url }} (${{ steps.publish.outputs.digest }})" >> "$GITHUB_STEP_SUMMARY"
