@@ -104,8 +104,12 @@ class CatalogTests(unittest.TestCase):
             app for app in build_catalog.build()["apps"] if app["id"] == "vaultwarden"
         )
 
-        self.assertIn("image: vaultwarden/server:1.36.0", app["compose"])
+        self.assertIn("image: vaultwarden/server:1.37.0", app["compose"])
         self.assertIn("source: /DATA/AppData/vaultwarden", app["compose"])
+        self.assertIn("host_ip: 127.0.0.1", app["compose"])
+        self.assertIn('  scheme: https\n', app["compose"])
+        self.assertIn('  port_map: "8443"\n', app["compose"])
+        self.assertNotIn("vaultwarden-https:", app["compose"])
         self.assertIn("SHOW_PASSWORD_HINT: \"${SHOW_PASSWORD_HINT:-false}\"", app["compose"])
         self.assertIn("no-new-privileges:true", app["compose"])
         self.assertNotIn("ADMIN_TOKEN:", app["compose"])

@@ -1,7 +1,7 @@
 name: vaultwarden
 services:
   vaultwarden:
-    image: vaultwarden/server:1.36.0
+    image: vaultwarden/server:1.37.0
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
@@ -12,6 +12,7 @@ services:
     ports:
       - target: 80
         published: "8082"
+        host_ip: 127.0.0.1
         protocol: tcp
     volumes:
       - type: bind
@@ -34,8 +35,8 @@ services:
       ports:
         - container: "80"
           description:
-            en_US: Vaultwarden web interface. Configure HTTPS before storing real passwords.
-            es_ES: Interfaz web de Vaultwarden. Configura HTTPS antes de guardar contraseñas reales.
+            en_US: Internal Vaultwarden interface. Activate secure access from HomeLab before storing real passwords.
+            es_ES: Interfaz interna de Vaultwarden. Activa el acceso seguro desde HomeLab antes de guardar contraseñas reales.
       volumes:
         - container: /data
           description:
@@ -43,7 +44,7 @@ services:
             es_ES: Datos de la bóveda y configuración persistente.
 x-casaos:
   id: com.alcoit.vaultwarden
-  version: "1.36.0"
+  version: "1.37.0"
   architectures:
     - amd64
     - arm64
@@ -51,16 +52,16 @@ x-casaos:
   author: AlcoIT Software
   category: Security
   description:
-    en_US: Lightweight password manager compatible with Bitwarden applications. HTTPS is required for secure use.
-    es_ES: Gestor de contraseñas ligero compatible con las aplicaciones de Bitwarden. Requiere HTTPS para un uso seguro.
+    en_US: Lightweight password manager compatible with Bitwarden applications, protected with LAN-only HTTPS.
+    es_ES: Gestor de contraseñas ligero compatible con las aplicaciones de Bitwarden, protegido con HTTPS sólo dentro del hogar.
   developer: Vaultwarden
   icon: https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/Vaultwarden/icon.png
   index: /
-  port_map: "8082"
-  scheme: http
+  port_map: "8443"
+  scheme: https
   tagline:
-    en_US: Keep your passwords on your own server.
-    es_ES: Guarda tus contraseñas en tu propio servidor.
+    en_US: Your passwords, encrypted inside your home network.
+    es_ES: Tus contraseñas cifradas dentro de tu red doméstica.
   thumbnail: https://cdn.jsdelivr.net/gh/AlcoIT-Software/alcoit-homelab-catalog@main/Apps/Vaultwarden/thumbnail.svg
   title:
     en_US: Vaultwarden
