@@ -1,15 +1,16 @@
 name: jellyfin
 services:
   jellyfin:
-    image: jellyfin/jellyfin:10.11.11
+    image: lscr.io/linuxserver/jellyfin:10.11.11
     restart: unless-stopped
-    user: "${PUID:-1000}:${PGID:-1000}"
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+    environment:
+      PUID: "${PUID:-1000}"
+      PGID: "${PGID:-1000}"
+      TZ: "${TZ:-UTC}"
     ports:
-      - "8096:8096/tcp"
+      - target: 8096
+        published: "8096"
+        protocol: tcp
     volumes:
       - type: bind
         source: /DATA/AppData/jellyfin/config
@@ -18,6 +19,34 @@ services:
         source: /DATA/Media
         target: /media
         read_only: true
+    x-casaos:
+      envs:
+        - container: PUID
+          description:
+            en_us: User identifier used for media files.
+            es_es: Identificador de usuario utilizado para los archivos.
+        - container: PGID
+          description:
+            en_us: Group identifier used for media files.
+            es_es: Identificador de grupo utilizado para los archivos.
+        - container: TZ
+          description:
+            en_us: Container timezone.
+            es_es: Zona horaria del contenedor.
+      ports:
+        - container: "8096"
+          description:
+            en_us: Jellyfin web interface.
+            es_es: Interfaz web de Jellyfin.
+      volumes:
+        - container: /config
+          description:
+            en_us: Persistent Jellyfin configuration.
+            es_es: Configuración persistente de Jellyfin.
+        - container: /media
+          description:
+            en_us: Read-only media library.
+            es_es: Biblioteca multimedia de solo lectura.
 x-casaos:
   id: jellyfin
   version: "10.11.11"

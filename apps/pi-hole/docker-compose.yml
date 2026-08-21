@@ -3,23 +3,59 @@ services:
   pi-hole:
     image: pihole/pihole:2026.05.0
     restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     cap_add:
-      - NET_BIND_SERVICE
+      - NET_ADMIN
     ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "8081:80/tcp"
+      - target: 53
+        published: "53"
+        protocol: tcp
+      - target: 53
+        published: "53"
+        protocol: udp
+      - target: 80
+        published: "8081"
+        protocol: tcp
     environment:
       TZ: "${TZ:-UTC}"
-      FTLCONF_webserver_api_password: "${PIHOLE_PASSWORD:?Set PIHOLE_PASSWORD}"
+      FTLCONF_webserver_api_password: casaos
+      FTLCONF_dns_listeningMode: all
     volumes:
       - type: bind
         source: /DATA/AppData/pi-hole/etc-pihole
         target: /etc/pihole
+    x-casaos:
+      envs:
+        - container: TZ
+          description:
+            en_us: Zona horaria del contenedor.
+            es_es: Zona horaria del contenedor.
+        - container: FTLCONF_webserver_api_password
+          description:
+            en_us: Pi-hole administrator password. Change the initial value.
+            es_es: Contraseña de administración de Pi-hole. Cambia el valor inicial.
+        - container: FTLCONF_dns_listeningMode
+          description:
+            en_us: Interfaces where Pi-hole accepts DNS queries.
+            es_es: Interfaces donde Pi-hole acepta consultas DNS.
+      ports:
+        - container: "53"
+          description:
+            en_us: DNS port.
+            es_es: Puerto DNS.
+        - container: "53"
+          protocol: udp
+          description:
+            en_us: DNS port.
+            es_es: Puerto DNS.
+        - container: "80"
+          description:
+            en_us: Pi-hole web interface.
+            es_es: Interfaz web de Pi-hole.
+      volumes:
+        - container: /etc/pihole
+          description:
+            en_us: Persistent Pi-hole configuration.
+            es_es: Configuración persistente de Pi-hole.
 x-casaos:
   id: pi-hole
   version: "2026.05.0"

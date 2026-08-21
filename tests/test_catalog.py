@@ -4,6 +4,8 @@ import importlib.machinery
 import importlib.util
 import json
 from pathlib import Path
+import shutil
+import subprocess
 import tempfile
 import unittest
 
@@ -61,6 +63,23 @@ class CatalogTests(unittest.TestCase):
                 app["compose"],
                 r'^\s*-\s*["\']?\$\{[^\n]+:[^\n]+$',
                 msg=f'{app["id"]} uses variable expansion in a short volume mount',
+            )
+
+    def test_every_compose_resolves_without_required_external_variables(self) -> None:
+        docker = shutil.which("docker")
+        if docker is None:
+            self.skipTest("Docker Compose is not installed")
+
+        for compose in sorted((ROOT / "apps").glob("*/docker-compose.yml")):
+            result = subprocess.run(
+                [docker, "compose", "-f", str(compose), "config", "-q"],
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(
+                result.returncode,
+                0,
+                msg=f"{compose} cannot be installed by Compose: {result.stderr}",
             )
 
 
