@@ -13,9 +13,10 @@ from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
 IDENTIFIER = re.compile(r"^[a-z0-9][a-z0-9-]{1,62}$")
+STORE_IDENTIFIER = re.compile(r"^(?:[a-z0-9]+\.){2,}[a-z0-9]+$")
 VERSION = re.compile(r"^[0-9]+(?:\.[0-9]+){1,3}(?:[-+][A-Za-z0-9.-]+)?$")
 IMAGE = re.compile(r"^\s*image:\s*([^\s]+)\s*$", re.MULTILINE)
-REQUIRED_METADATA = {"id", "name", "version", "icon"}
+REQUIRED_METADATA = {"id", "store_app_id", "name", "version", "icon"}
 
 
 def canonical(value: object) -> bytes:
@@ -44,8 +45,11 @@ def load_application(directory: Path) -> dict:
     if set(metadata) != REQUIRED_METADATA:
         raise ValueError(f"{manifest_path}: expected fields {sorted(REQUIRED_METADATA)}")
     app_id = str(metadata["id"])
-    if directory.name != app_id or not IDENTIFIER.fullmatch(app_id):
-        raise ValueError(f"{manifest_path}: id must match its directory")
+    if directory.name.lower().replace("_", "-") != app_id or not IDENTIFIER.fullmatch(app_id):
+        raise ValueError(f"{manifest_path}: id must match its normalized directory")
+    store_app_id = str(metadata["store_app_id"])
+    if not STORE_IDENTIFIER.fullmatch(store_app_id):
+        raise ValueError(f"{manifest_path}: store_app_id must be a reverse-domain identifier")
     if not isinstance(metadata["name"], str) or not metadata["name"].strip():
         raise ValueError(f"{manifest_path}: name must be non-empty")
     if not VERSION.fullmatch(str(metadata["version"])):
@@ -57,8 +61,8 @@ def load_application(directory: Path) -> dict:
         raise ValueError(f"{compose_path}: file must end with a newline")
     if "x-casaos:" not in compose:
         raise ValueError(f"{compose_path}: x-casaos metadata is required")
-    if not re.search(rf"^  id:\s*{re.escape(app_id)}\s*$", compose, re.MULTILINE):
-        raise ValueError(f"{compose_path}: x-casaos.id must match the application id")
+    if not re.search(rf"^  id:\s*{re.escape(store_app_id)}\s*$", compose, re.MULTILINE):
+        raise ValueError(f"{compose_path}: x-casaos.id must match store_app_id")
     if not re.search(
         rf'^  version:\s*["\']?{re.escape(str(metadata["version"]))}["\']?\s*$',
         compose,
@@ -73,7 +77,13 @@ def load_application(directory: Path) -> dict:
     for image in images:
         if image.endswith(":latest") or (":" not in image and "@sha256:" not in image):
             raise ValueError(f"{compose_path}: image must be pinned: {image}")
-    return {**metadata, "compose": compose}
+    return {
+        "id": app_id,
+        "name": metadata["name"],
+        "version": metadata["version"],
+        "icon": metadata["icon"],
+        "compose": compose,
+    }
 
 
 def build() -> dict:
@@ -84,7 +94,7 @@ def build() -> dict:
         raise ValueError("catalog.release.json is invalid")
     applications = [
         load_application(path)
-        for path in sorted((ROOT / "apps").iterdir())
+        for path in sorted((ROOT / "Apps").iterdir())
         if path.is_dir()
     ]
     identifiers = [app["id"] for app in applications]

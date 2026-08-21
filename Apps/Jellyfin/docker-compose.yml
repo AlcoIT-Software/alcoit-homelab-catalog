@@ -23,32 +23,32 @@ services:
       envs:
         - container: PUID
           description:
-            en_us: User identifier used for media files.
-            es_es: Identificador de usuario utilizado para los archivos.
+            en_US: User identifier used for media files.
+            es_ES: Identificador de usuario utilizado para los archivos.
         - container: PGID
           description:
-            en_us: Group identifier used for media files.
-            es_es: Identificador de grupo utilizado para los archivos.
+            en_US: Group identifier used for media files.
+            es_ES: Identificador de grupo utilizado para los archivos.
         - container: TZ
           description:
-            en_us: Container timezone.
-            es_es: Zona horaria del contenedor.
+            en_US: Container timezone.
+            es_ES: Zona horaria del contenedor.
       ports:
         - container: "8096"
           description:
-            en_us: Jellyfin web interface.
-            es_es: Interfaz web de Jellyfin.
+            en_US: Jellyfin web interface.
+            es_ES: Interfaz web de Jellyfin.
       volumes:
         - container: /config
           description:
-            en_us: Persistent Jellyfin configuration.
-            es_es: Configuración persistente de Jellyfin.
+            en_US: Persistent Jellyfin configuration.
+            es_ES: Configuración persistente de Jellyfin.
         - container: /media
           description:
-            en_us: Read-only media library.
-            es_es: Biblioteca multimedia de solo lectura.
+            en_US: Read-only media library.
+            es_ES: Biblioteca multimedia de solo lectura.
 x-casaos:
-  id: jellyfin
+  id: com.alcoit.jellyfin
   version: "10.11.11"
   architectures:
     - amd64
@@ -57,17 +57,16 @@ x-casaos:
   author: AlcoIT Software
   category: Media
   description:
-    en_us: Private media system.
-    es_es: Sistema privado de contenido multimedia.
+    en_US: Private media system.
+    es_ES: Sistema privado de contenido multimedia.
   developer: Jellyfin
   icon: https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/Jellyfin/icon.png
   index: /
   port_map: "8096"
   scheme: http
-  store_app_id: com.alcoit.jellyfin
   tagline:
-    en_us: Your media, under your control.
-    es_es: Tu contenido multimedia bajo tu control.
+    en_US: Your media, under your control.
+    es_ES: Tu contenido multimedia bajo tu control.
   title:
-    en_us: Jellyfin
-    es_es: Jellyfin
+    en_US: Jellyfin
+    es_ES: Jellyfin

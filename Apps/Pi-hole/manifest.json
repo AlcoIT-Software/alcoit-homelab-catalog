@@ -1,5 +1,6 @@
 {
   "id": "pi-hole",
+  "store_app_id": "com.alcoit.pihole",
   "name": "Pi-hole",
   "version": "2026.05.0",
   "icon": "https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/Pi-hole/icon.png"

@@ -1,5 +1,6 @@
 {
   "id": "jellyfin",
+  "store_app_id": "com.alcoit.jellyfin",
   "name": "Jellyfin",
   "version": "10.11.11",
   "icon": "https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/Jellyfin/icon.png"

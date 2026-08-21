@@ -36,11 +36,23 @@ class CatalogTests(unittest.TestCase):
 
     def test_catalog_contains_every_application_directory(self) -> None:
         catalog = build_catalog.build()
-        expected = sorted(path.name for path in (ROOT / "apps").iterdir() if path.is_dir())
+        expected = sorted(
+            json.loads((path / "manifest.json").read_text())["id"]
+            for path in (ROOT / "Apps").iterdir()
+            if path.is_dir()
+        )
         self.assertEqual([app["id"] for app in catalog["apps"]], expected)
         for app in catalog["apps"]:
-            self.assertIn(f"  id: {app['id']}\n", app["compose"])
+            self.assertRegex(app["compose"], r"(?m)^  id: com\.alcoit\.[a-z0-9]+$")
             self.assertIn(f'  version: "{app["version"]}"\n', app["compose"])
+
+    def test_catalog_keeps_only_the_two_supported_apps(self) -> None:
+        catalog = build_catalog.build()
+
+        self.assertEqual(
+            {app["id"] for app in catalog["apps"]}, {"jellyfin", "pi-hole"}
+        )
+        self.assertEqual(len(catalog["apps"]), 2)
 
     def test_catalog_is_deterministic(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -70,7 +82,7 @@ class CatalogTests(unittest.TestCase):
         if docker is None:
             self.skipTest("Docker Compose is not installed")
 
-        for compose in sorted((ROOT / "apps").glob("*/docker-compose.yml")):
+        for compose in sorted((ROOT / "Apps").glob("*/docker-compose.yml")):
             result = subprocess.run(
                 [docker, "compose", "-f", str(compose), "config", "-q"],
                 capture_output=True,

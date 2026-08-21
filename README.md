@@ -11,13 +11,18 @@ or Raspberry Pi installer code.
 ## Layout
 
 ```text
-apps/<application>/manifest.json
-apps/<application>/docker-compose.yml
+Apps/<application>/manifest.json
+Apps/<application>/docker-compose.yml
 catalog.release.json
 catalog.json
 catalog.json.sha256
 scripts/build-catalog
 ```
+
+El catálogo conserva únicamente Jellyfin y Pi-hole. El `id` del manifiesto es
+el identificador interno del servicio, mientras `store_app_id` es el
+identificador estable de dominio inverso que CasaOS usa para instalar y
+actualizar la aplicación.
 
 ## Build and validate
 

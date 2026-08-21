@@ -27,56 +27,55 @@ services:
       envs:
         - container: TZ
           description:
-            en_us: Zona horaria del contenedor.
-            es_es: Zona horaria del contenedor.
+            en_US: Container timezone.
+            es_ES: Zona horaria del contenedor.
         - container: FTLCONF_webserver_api_password
           description:
-            en_us: Pi-hole administrator password. Change the initial value.
-            es_es: Contraseña de administración de Pi-hole. Cambia el valor inicial.
+            en_US: Pi-hole administrator password. Change the initial value.
+            es_ES: Contraseña de administración de Pi-hole. Cambia el valor inicial.
         - container: FTLCONF_dns_listeningMode
           description:
-            en_us: Interfaces where Pi-hole accepts DNS queries.
-            es_es: Interfaces donde Pi-hole acepta consultas DNS.
+            en_US: Interfaces where Pi-hole accepts DNS queries.
+            es_ES: Interfaces donde Pi-hole acepta consultas DNS.
       ports:
         - container: "53"
           description:
-            en_us: DNS port.
-            es_es: Puerto DNS.
+            en_US: DNS port.
+            es_ES: Puerto DNS.
         - container: "53"
           protocol: udp
           description:
-            en_us: DNS port.
-            es_es: Puerto DNS.
+            en_US: DNS port.
+            es_ES: Puerto DNS.
         - container: "80"
           description:
-            en_us: Pi-hole web interface.
-            es_es: Interfaz web de Pi-hole.
+            en_US: Pi-hole web interface.
+            es_ES: Interfaz web de Pi-hole.
       volumes:
         - container: /etc/pihole
           description:
-            en_us: Persistent Pi-hole configuration.
-            es_es: Configuración persistente de Pi-hole.
+            en_US: Persistent Pi-hole configuration.
+            es_ES: Configuración persistente de Pi-hole.
 x-casaos:
-  id: pi-hole
+  id: com.alcoit.pihole
   version: "2026.05.0"
   architectures:
     - amd64
     - arm64
   main: pi-hole
   author: AlcoIT Software
-  category: Network
+  category: Networking
   description:
-    en_us: Network-wide DNS filtering.
-    es_es: Filtrado DNS para toda la red.
+    en_US: Network-wide DNS filtering.
+    es_ES: Filtrado DNS para toda la red.
   developer: Pi-hole
   icon: https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/Pi-hole/icon.png
   index: /admin
   port_map: "8081"
   scheme: http
-  store_app_id: com.alcoit.pihole
   tagline:
-    en_us: Network-wide ad blocking.
-    es_es: Bloqueo de publicidad para toda la red.
+    en_US: Network-wide ad blocking.
+    es_ES: Bloqueo de publicidad para toda la red.
   title:
-    en_us: Pi-hole
-    es_es: Pi-hole
+    en_US: Pi-hole
+    es_ES: Pi-hole
