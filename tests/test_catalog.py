@@ -73,6 +73,24 @@ class CatalogTests(unittest.TestCase):
         ):
             self.assertTrue((ROOT / filename).is_file(), filename)
 
+    def test_featured_apps_have_catalog_owned_thumbnails(self) -> None:
+        catalog = build_catalog.build()
+        by_main = {
+            build_catalog.casaos_value(app["compose"], "main"): app
+            for app in catalog["apps"]
+        }
+
+        for featured in catalog["store"]["featured"]:
+            app = by_main[featured["appid"]]
+            thumbnail = build_catalog.casaos_value(app["compose"], "thumbnail")
+            self.assertIn(
+                "AlcoIT-Software/alcoit-homelab-catalog@main/Apps/",
+                thumbnail,
+            )
+            filename = thumbnail.rsplit("/", 1)[-1]
+            directory = "Pi-hole" if featured["appid"] == "pihole" else "Jellyfin"
+            self.assertTrue((ROOT / "Apps" / directory / filename).is_file())
+
     def test_pihole_uses_the_casaos_legacy_application_name(self) -> None:
         app = next(app for app in build_catalog.build()["apps"] if app["id"] == "pi-hole")
 

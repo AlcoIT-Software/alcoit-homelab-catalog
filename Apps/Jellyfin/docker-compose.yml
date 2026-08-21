@@ -67,6 +67,7 @@ x-casaos:
   tagline:
     en_US: Your media, under your control.
     es_ES: Tu contenido multimedia bajo tu control.
+  thumbnail: https://cdn.jsdelivr.net/gh/AlcoIT-Software/alcoit-homelab-catalog@main/Apps/Jellyfin/thumbnail.svg
   title:
     en_US: Jellyfin
     es_ES: Jellyfin

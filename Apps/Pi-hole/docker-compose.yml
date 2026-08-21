@@ -76,6 +76,7 @@ x-casaos:
   tagline:
     en_US: Network-wide ad blocking.
     es_ES: Bloqueo de publicidad para toda la red.
+  thumbnail: https://cdn.jsdelivr.net/gh/AlcoIT-Software/alcoit-homelab-catalog@main/Apps/Pi-hole/thumbnail.svg
   title:
     en_US: Pi-hole
     es_ES: Pi-hole

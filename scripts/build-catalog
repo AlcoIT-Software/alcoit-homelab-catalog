@@ -78,6 +78,17 @@ def validate_https_url(value: object, field: str) -> str:
     return text
 
 
+def casaos_value(compose: str, field: str) -> str:
+    root = re.search(r"(?ms)^x-casaos:\s*\n(?P<body>(?:^[ \t]+.*(?:\n|$))*)", compose)
+    match = re.search(
+        rf"(?m)^  {re.escape(field)}:\s*([^\s]+)\s*$",
+        root.group("body") if root else "",
+    )
+    if match is None:
+        raise ValueError(f"x-casaos.{field} is required")
+    return match.group(1).strip('"\'')
+
+
 def load_application(directory: Path) -> dict:
     manifest_path = directory / "manifest.json"
     compose_path = directory / "docker-compose.yml"
@@ -141,14 +152,20 @@ def build() -> dict:
     if not applications or len(identifiers) != len(set(identifiers)):
         raise ValueError("catalog must contain unique applications")
     store = load_store()
-    legacy_ids = {
-        match.group(1)
-        for app in applications
-        if (match := re.search(r"^  main:\s*([^\s]+)\s*$", app["compose"], re.MULTILINE))
+    applications_by_legacy_id = {
+        casaos_value(app["compose"], "main"): app for app in applications
     }
     for collection in (store["recommendations"], store["featured"]):
-        if any(entry["appid"] not in legacy_ids for entry in collection):
+        if any(entry["appid"] not in applications_by_legacy_id for entry in collection):
             raise ValueError("store lists reference an unknown CasaOS application")
+    for entry in store["featured"]:
+        app = applications_by_legacy_id[entry["appid"]]
+        thumbnail = validate_https_url(
+            casaos_value(app["compose"], "thumbnail"),
+            f"{entry['appid']}: x-casaos.thumbnail",
+        )
+        if "AlcoIT-Software/alcoit-homelab-catalog@main/Apps/" not in thumbnail:
+            raise ValueError("featured thumbnails must be owned by the catalog repository")
     return {**release, "store": store, "apps": applications}
 
 

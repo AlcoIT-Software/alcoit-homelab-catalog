@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title description">
+  <title id="title">Pi-hole en AlcoItAppStore</title>
+  <desc id="description">Banner azul con un escudo de red que representa el filtrado DNS.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#061526"/>
+      <stop offset="0.55" stop-color="#092d55"/>
+      <stop offset="1" stop-color="#0860a7"/>
+    </linearGradient>
+    <linearGradient id="shield" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#54d6ff"/>
+      <stop offset="1" stop-color="#2476ff"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#000" flood-opacity=".35"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="675" rx="42" fill="url(#background)"/>
+  <circle cx="1090" cy="100" r="220" fill="#32c9ff" opacity=".1"/>
+  <circle cx="1020" cy="690" r="320" fill="#2373ff" opacity=".12"/>
+  <g transform="translate(86 84)" filter="url(#shadow)">
+    <rect width="420" height="507" rx="36" fill="#071a30" stroke="#fff" stroke-opacity=".1"/>
+    <path d="M210 51 354 105v121c0 105-59 190-144 232C125 416 66 331 66 226V105Z" fill="url(#shield)"/>
+    <path d="M210 85 320 126v98c0 81-43 147-110 185-67-38-110-104-110-185v-98Z" fill="#092b50"/>
+    <circle cx="210" cy="205" r="31" fill="#5ce0ff"/>
+    <circle cx="142" cy="281" r="19" fill="#fff"/>
+    <circle cx="278" cy="281" r="19" fill="#fff"/>
+    <path d="M210 236v45m-49 0h98" fill="none" stroke="#8fe9ff" stroke-width="12" stroke-linecap="round"/>
+  </g>
+  <g fill="#fff">
+    <text x="565" y="238" font-family="Inter,Segoe UI,sans-serif" font-size="76" font-weight="750">Pi-hole</text>
+    <text x="569" y="304" font-family="Inter,Segoe UI,sans-serif" font-size="29" fill="#c5ddf2">Filtrado DNS para toda tu red.</text>
+  </g>
+  <g transform="translate(565 378)">
+    <rect width="282" height="62" rx="31" fill="#fff" fill-opacity=".1" stroke="#fff" stroke-opacity=".15"/>
+    <circle cx="35" cy="31" r="10" fill="#55e09b"/>
+    <text x="58" y="40" font-family="Inter,Segoe UI,sans-serif" font-size="23" fill="#edf8ff">Protección de red</text>
+  </g>
+  <text x="569" y="540" font-family="Inter,Segoe UI,sans-serif" font-size="22" letter-spacing="4" fill="#a8cbe7">ALCOIT APP STORE</text>
+</svg>
