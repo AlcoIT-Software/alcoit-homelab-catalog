@@ -1,0 +1,7 @@
+{
+  "id": "alcoit-secure-gateway",
+  "store_app_id": "com.alcoit.securegateway",
+  "name": "AlcoIT Secure Gateway",
+  "version": "2.11.4",
+  "icon": "https://cdn.jsdelivr.net/gh/AlcoIT-Software/alcoit-homelab-catalog@main/Apps/AlcoIT-Secure-Gateway/icon.svg"
+}

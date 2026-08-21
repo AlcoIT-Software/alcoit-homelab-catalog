@@ -51,9 +51,9 @@ class CatalogTests(unittest.TestCase):
 
         self.assertEqual(
             {app["id"] for app in catalog["apps"]},
-            {"jellyfin", "pi-hole", "vaultwarden"},
+            {"alcoit-secure-gateway", "jellyfin", "pi-hole", "vaultwarden"},
         )
-        self.assertEqual(len(catalog["apps"]), 3)
+        self.assertEqual(len(catalog["apps"]), 4)
 
     def test_repository_owns_complete_store_metadata(self) -> None:
         catalog = build_catalog.build()
@@ -113,6 +113,23 @@ class CatalogTests(unittest.TestCase):
         self.assertIn("SHOW_PASSWORD_HINT: \"${SHOW_PASSWORD_HINT:-false}\"", app["compose"])
         self.assertIn("no-new-privileges:true", app["compose"])
         self.assertNotIn("ADMIN_TOKEN:", app["compose"])
+
+    def test_secure_gateway_is_a_single_hardened_shared_proxy(self) -> None:
+        app = next(
+            app
+            for app in build_catalog.build()["apps"]
+            if app["id"] == "alcoit-secure-gateway"
+        )
+
+        self.assertIn("image: caddy:2.11.4-alpine", app["compose"])
+        self.assertIn("container_name: alcoit-secure-gateway", app["compose"])
+        self.assertIn('published: "443"', app["compose"])
+        self.assertIn("source: /DATA/AppData/alcoit-homelab/application-access", app["compose"])
+        self.assertIn("target: /etc/alcoit-gateway", app["compose"])
+        self.assertIn("read_only: true", app["compose"])
+        self.assertIn("no-new-privileges:true", app["compose"])
+        self.assertNotIn("/var/run/docker.sock", app["compose"])
+        self.assertEqual(app["compose"].count("image:"), 1)
 
     def test_catalog_is_deterministic(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

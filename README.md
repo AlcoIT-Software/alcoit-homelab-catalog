@@ -24,7 +24,7 @@ catalog.json.sha256
 scripts/build-catalog
 ```
 
-El catálogo conserva únicamente Jellyfin, Pi-hole y Vaultwarden. Este repositorio también es
+El catálogo conserva únicamente AlcoIT Secure Gateway, Jellyfin, Pi-hole y Vaultwarden. Este repositorio también es
 el único dueño del nombre de la tienda, idiomas, filtros, recomendaciones y
 aplicaciones destacadas; esos documentos se incorporan al artefacto autenticado
 y no se distribuyen dentro del cliente HomeLab. El `id` del manifiesto es
