@@ -15,6 +15,54 @@
       "version": "2026.05.0"
     }
   ],
-  "schema_version": 1,
-  "version": "1.0.4"
+  "schema_version": 2,
+  "store": {
+    "categories": [
+      {
+        "description": "Media Apps",
+        "font": "play-circle-outline",
+        "name": "Media"
+      },
+      {
+        "description": "Networking Apps",
+        "font": "lan",
+        "name": "Networking"
+      }
+    ],
+    "config": {
+      "description": {
+        "en_US": "Tienda privada para aplicaciones usadas en mi HomeLab.",
+        "es_ES": "Tienda privada para aplicaciones usadas en mi HomeLab."
+      },
+      "maintainer": "Alcoit",
+      "name": {
+        "en_US": "AlcoItAppStore",
+        "es_ES": "AlcoItAppStore"
+      },
+      "store_id": "alcoit-homelab-store",
+      "url": "https://github.com/AlcoIT-Software/alcoit-homelab-catalog",
+      "version": 2
+    },
+    "featured": [
+      {
+        "appid": "jellyfin"
+      },
+      {
+        "appid": "pihole"
+      }
+    ],
+    "recommendations": [
+      {
+        "appid": "jellyfin"
+      },
+      {
+        "appid": "pihole"
+      }
+    ],
+    "supported_languages": [
+      "en_US",
+      "es_ES"
+    ]
+  },
+  "version": "1.1.0"
 }

@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Media",
+    "font": "play-circle-outline",
+    "description": "Media Apps"
+  },
+  {
+    "name": "Networking",
+    "font": "lan",
+    "description": "Networking Apps"
+  }
+]

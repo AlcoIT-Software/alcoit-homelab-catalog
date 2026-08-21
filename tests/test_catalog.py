@@ -54,6 +54,25 @@ class CatalogTests(unittest.TestCase):
         )
         self.assertEqual(len(catalog["apps"]), 2)
 
+    def test_repository_owns_complete_store_metadata(self) -> None:
+        catalog = build_catalog.build()
+
+        self.assertEqual(catalog["schema_version"], 2)
+        self.assertEqual(catalog["store"]["config"]["name"]["en_US"], "AlcoItAppStore")
+        self.assertEqual(catalog["store"]["supported_languages"], ["en_US", "es_ES"])
+        self.assertEqual(
+            {item["appid"] for item in catalog["store"]["recommendations"]},
+            {"jellyfin", "pihole"},
+        )
+        for filename in (
+            "store-config.json",
+            "supported-languages.json",
+            "category-list.json",
+            "recommend-list.json",
+            "featured-apps.json",
+        ):
+            self.assertTrue((ROOT / filename).is_file(), filename)
+
     def test_pihole_uses_the_casaos_legacy_application_name(self) -> None:
         app = next(app for app in build_catalog.build()["apps"] if app["id"] == "pi-hole")
 

@@ -30,6 +30,46 @@ def load_json(path: Path) -> dict:
     return value
 
 
+def load_json_value(path: Path) -> object:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def load_store() -> dict:
+    config = load_json(ROOT / "store-config.json")
+    expected = {"version", "store_id", "name", "description", "maintainer", "url"}
+    if set(config) != expected or config["version"] != 2:
+        raise ValueError("store-config.json is invalid")
+    if not isinstance(config["name"], dict) or not config["name"].get("en_US"):
+        raise ValueError("store-config.json must define an en_US name")
+    if not isinstance(config["description"], dict) or not config["description"].get("en_US"):
+        raise ValueError("store-config.json must define an en_US description")
+    validate_https_url(config["url"], "store-config.json: url")
+
+    languages = load_json_value(ROOT / "supported-languages.json")
+    categories = load_json_value(ROOT / "category-list.json")
+    recommendations = load_json_value(ROOT / "recommend-list.json")
+    featured = load_json_value(ROOT / "featured-apps.json")
+    if not isinstance(languages, list) or "en_US" not in languages or len(languages) != len(set(languages)):
+        raise ValueError("supported-languages.json is invalid")
+    if not isinstance(categories, list) or not categories:
+        raise ValueError("category-list.json is invalid")
+    for category in categories:
+        if not isinstance(category, dict) or set(category) != {"name", "font", "description"}:
+            raise ValueError("category-list.json contains an invalid category")
+    for filename, entries in (("recommend-list.json", recommendations), ("featured-apps.json", featured)):
+        if not isinstance(entries, list):
+            raise ValueError(f"{filename} is invalid")
+        if any(not isinstance(entry, dict) or set(entry) != {"appid"} for entry in entries):
+            raise ValueError(f"{filename} contains an invalid application")
+    return {
+        "config": config,
+        "supported_languages": languages,
+        "categories": categories,
+        "recommendations": recommendations,
+        "featured": featured,
+    }
+
+
 def validate_https_url(value: object, field: str) -> str:
     text = str(value)
     parsed = urlparse(text)
@@ -90,7 +130,7 @@ def build() -> dict:
     release = load_json(ROOT / "catalog.release.json")
     if set(release) != {"schema_version", "version"}:
         raise ValueError("catalog.release.json has unsupported fields")
-    if release["schema_version"] != 1 or not VERSION.fullmatch(str(release["version"])):
+    if release["schema_version"] != 2 or not VERSION.fullmatch(str(release["version"])):
         raise ValueError("catalog.release.json is invalid")
     applications = [
         load_application(path)
@@ -100,7 +140,16 @@ def build() -> dict:
     identifiers = [app["id"] for app in applications]
     if not applications or len(identifiers) != len(set(identifiers)):
         raise ValueError("catalog must contain unique applications")
-    return {**release, "apps": applications}
+    store = load_store()
+    legacy_ids = {
+        match.group(1)
+        for app in applications
+        if (match := re.search(r"^  main:\s*([^\s]+)\s*$", app["compose"], re.MULTILINE))
+    }
+    for collection in (store["recommendations"], store["featured"]):
+        if any(entry["appid"] not in legacy_ids for entry in collection):
+            raise ValueError("store lists reference an unknown CasaOS application")
+    return {**release, "store": store, "apps": applications}
 
 
 def main() -> int:
