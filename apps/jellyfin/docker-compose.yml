@@ -11,8 +11,13 @@ services:
     ports:
       - "8096:8096/tcp"
     volumes:
-      - "${APP_DATA_DIR:-/DATA/AppData/jellyfin}/config:/config"
-      - "${MEDIA_DIR:-/DATA/Media}:/media:ro"
+      - type: bind
+        source: /DATA/AppData/jellyfin/config
+        target: /config
+      - type: bind
+        source: /DATA/Media
+        target: /media
+        read_only: true
 x-casaos:
   id: jellyfin
   version: "10.11.11"

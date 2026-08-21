@@ -17,7 +17,9 @@ services:
       TZ: "${TZ:-UTC}"
       FTLCONF_webserver_api_password: "${PIHOLE_PASSWORD:?Set PIHOLE_PASSWORD}"
     volumes:
-      - "${APP_DATA_DIR:-/DATA/AppData/pi-hole}/etc-pihole:/etc/pihole"
+      - type: bind
+        source: /DATA/AppData/pi-hole/etc-pihole
+        target: /etc/pihole
 x-casaos:
   id: pi-hole
   version: "2026.05.0"

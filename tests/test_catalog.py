@@ -55,6 +55,14 @@ class CatalogTests(unittest.TestCase):
             self.assertNotIn(":latest", app["compose"])
             self.assertNotIn("privileged: true", app["compose"].lower())
 
+    def test_volume_mounts_are_compatible_with_casaos_compose_parser(self) -> None:
+        for app in build_catalog.build()["apps"]:
+            self.assertNotRegex(
+                app["compose"],
+                r'^\s*-\s*["\']?\$\{[^\n]+:[^\n]+$',
+                msg=f'{app["id"]} uses variable expansion in a short volume mount',
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
