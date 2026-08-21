@@ -1,6 +1,6 @@
-name: pi-hole
+name: pihole
 services:
-  pi-hole:
+  pihole:
     image: pihole/pihole:2026.05.0
     restart: unless-stopped
     cap_add:
@@ -62,7 +62,7 @@ x-casaos:
   architectures:
     - amd64
     - arm64
-  main: pi-hole
+  main: pihole
   author: AlcoIT Software
   category: Networking
   description:

@@ -54,6 +54,13 @@ class CatalogTests(unittest.TestCase):
         )
         self.assertEqual(len(catalog["apps"]), 2)
 
+    def test_pihole_uses_the_casaos_legacy_application_name(self) -> None:
+        app = next(app for app in build_catalog.build()["apps"] if app["id"] == "pi-hole")
+
+        self.assertIn("name: pihole\n", app["compose"])
+        self.assertIn("  pihole:\n", app["compose"])
+        self.assertIn("  main: pihole\n", app["compose"])
+
     def test_catalog_is_deterministic(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             first = Path(directory) / "first.json"
