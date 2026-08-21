@@ -13,6 +13,13 @@
       "id": "pi-hole",
       "name": "Pi-hole",
       "version": "2026.05.0"
+    },
+    {
+      "compose": "name: vaultwarden\nservices:\n  vaultwarden:\n    image: vaultwarden/server:1.36.0\n    restart: unless-stopped\n    security_opt:\n      - no-new-privileges:true\n    environment:\n      SIGNUPS_ALLOWED: \"${SIGNUPS_ALLOWED:-true}\"\n      INVITATIONS_ALLOWED: \"${INVITATIONS_ALLOWED:-true}\"\n      SHOW_PASSWORD_HINT: \"${SHOW_PASSWORD_HINT:-false}\"\n    ports:\n      - target: 80\n        published: \"8082\"\n        protocol: tcp\n    volumes:\n      - type: bind\n        source: /DATA/AppData/vaultwarden\n        target: /data\n    x-casaos:\n      envs:\n        - container: SIGNUPS_ALLOWED\n          description:\n            en_US: Allows account creation. Turn it off after creating your first account.\n            es_ES: Permite crear cuentas. Desactívalo después de crear tu primera cuenta.\n        - container: INVITATIONS_ALLOWED\n          description:\n            en_US: Allows existing users to invite other people.\n            es_ES: Permite que los usuarios existentes inviten a otras personas.\n        - container: SHOW_PASSWORD_HINT\n          description:\n            en_US: Shows password hints in emails. Disabled for better privacy.\n            es_ES: Muestra pistas de contraseña en los correos. Está desactivado para mayor privacidad.\n      ports:\n        - container: \"80\"\n          description:\n            en_US: Vaultwarden web interface. Configure HTTPS before storing real passwords.\n            es_ES: Interfaz web de Vaultwarden. Configura HTTPS antes de guardar contraseñas reales.\n      volumes:\n        - container: /data\n          description:\n            en_US: Encrypted vault data and persistent configuration.\n            es_ES: Datos de la bóveda y configuración persistente.\nx-casaos:\n  id: com.alcoit.vaultwarden\n  version: \"1.36.0\"\n  architectures:\n    - amd64\n    - arm64\n  main: vaultwarden\n  author: AlcoIT Software\n  category: Security\n  description:\n    en_US: Lightweight password manager compatible with Bitwarden applications. HTTPS is required for secure use.\n    es_ES: Gestor de contraseñas ligero compatible con las aplicaciones de Bitwarden. Requiere HTTPS para un uso seguro.\n  developer: Vaultwarden\n  icon: https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/Vaultwarden/icon.png\n  index: /\n  port_map: \"8082\"\n  scheme: http\n  tagline:\n    en_US: Keep your passwords on your own server.\n    es_ES: Guarda tus contraseñas en tu propio servidor.\n  thumbnail: https://cdn.jsdelivr.net/gh/AlcoIT-Software/alcoit-homelab-catalog@main/Apps/Vaultwarden/thumbnail.svg\n  title:\n    en_US: Vaultwarden\n    es_ES: Vaultwarden\n",
+      "icon": "https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/Vaultwarden/icon.png",
+      "id": "vaultwarden",
+      "name": "Vaultwarden",
+      "version": "1.36.0"
     }
   ],
   "schema_version": 2,
@@ -27,6 +34,11 @@
         "description": "Networking Apps",
         "font": "lan",
         "name": "Networking"
+      },
+      {
+        "description": "Security Apps",
+        "font": "shield-lock-outline",
+        "name": "Security"
       }
     ],
     "config": {
@@ -64,5 +76,5 @@
       "es_ES"
     ]
   },
-  "version": "1.1.1"
+  "version": "1.2.0"
 }

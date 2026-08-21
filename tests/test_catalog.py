@@ -46,13 +46,14 @@ class CatalogTests(unittest.TestCase):
             self.assertRegex(app["compose"], r"(?m)^  id: com\.alcoit\.[a-z0-9]+$")
             self.assertIn(f'  version: "{app["version"]}"\n', app["compose"])
 
-    def test_catalog_keeps_only_the_two_supported_apps(self) -> None:
+    def test_catalog_keeps_only_the_supported_apps(self) -> None:
         catalog = build_catalog.build()
 
         self.assertEqual(
-            {app["id"] for app in catalog["apps"]}, {"jellyfin", "pi-hole"}
+            {app["id"] for app in catalog["apps"]},
+            {"jellyfin", "pi-hole", "vaultwarden"},
         )
-        self.assertEqual(len(catalog["apps"]), 2)
+        self.assertEqual(len(catalog["apps"]), 3)
 
     def test_repository_owns_complete_store_metadata(self) -> None:
         catalog = build_catalog.build()
@@ -97,6 +98,17 @@ class CatalogTests(unittest.TestCase):
         self.assertIn("name: pihole\n", app["compose"])
         self.assertIn("  pihole:\n", app["compose"])
         self.assertIn("  main: pihole\n", app["compose"])
+
+    def test_vaultwarden_has_safe_install_defaults(self) -> None:
+        app = next(
+            app for app in build_catalog.build()["apps"] if app["id"] == "vaultwarden"
+        )
+
+        self.assertIn("image: vaultwarden/server:1.36.0", app["compose"])
+        self.assertIn("source: /DATA/AppData/vaultwarden", app["compose"])
+        self.assertIn("SHOW_PASSWORD_HINT: \"${SHOW_PASSWORD_HINT:-false}\"", app["compose"])
+        self.assertIn("no-new-privileges:true", app["compose"])
+        self.assertNotIn("ADMIN_TOKEN:", app["compose"])
 
     def test_catalog_is_deterministic(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

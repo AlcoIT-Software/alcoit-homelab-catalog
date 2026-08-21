@@ -8,5 +8,10 @@
     "name": "Networking",
     "font": "lan",
     "description": "Networking Apps"
+  },
+  {
+    "name": "Security",
+    "font": "shield-lock-outline",
+    "description": "Security Apps"
   }
 ]

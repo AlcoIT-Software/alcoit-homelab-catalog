@@ -1,0 +1,7 @@
+{
+  "id": "vaultwarden",
+  "store_app_id": "com.alcoit.vaultwarden",
+  "name": "Vaultwarden",
+  "version": "1.36.0",
+  "icon": "https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/Vaultwarden/icon.png"
+}

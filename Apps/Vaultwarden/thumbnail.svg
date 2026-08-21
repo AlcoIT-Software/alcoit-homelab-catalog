@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title description">
+  <title id="title">Vaultwarden en AlcoItAppStore</title>
+  <desc id="description">Banner azul con un escudo y una bóveda de contraseñas privada.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071a2d"/>
+      <stop offset="0.55" stop-color="#0b3154"/>
+      <stop offset="1" stop-color="#1769aa"/>
+    </linearGradient>
+    <linearGradient id="shield" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#70c7ff"/>
+      <stop offset="1" stop-color="#1684cc"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#000" flood-opacity=".35"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="675" rx="42" fill="url(#background)"/>
+  <circle cx="1080" cy="90" r="230" fill="#63c2ff" opacity=".1"/>
+  <circle cx="1010" cy="700" r="330" fill="#20a4f3" opacity=".08"/>
+  <g transform="translate(105 82)" filter="url(#shadow)">
+    <rect width="390" height="510" rx="42" fill="#061522" stroke="#fff" stroke-opacity=".12"/>
+    <path d="M195 58 320 103v112c0 112-54 188-125 232C124 403 70 327 70 215V103Z" fill="url(#shield)"/>
+    <path d="M195 88 290 122v93c0 88-39 151-95 191-56-40-95-103-95-191v-93Z" fill="#09213a" opacity=".86"/>
+    <circle cx="195" cy="224" r="48" fill="#eaf7ff"/>
+    <rect x="178" y="249" width="34" height="71" rx="17" fill="#eaf7ff"/>
+  </g>
+  <g fill="#fff">
+    <text x="560" y="238" font-family="Inter,Segoe UI,sans-serif" font-size="72" font-weight="750">Vaultwarden</text>
+    <text x="564" y="304" font-family="Inter,Segoe UI,sans-serif" font-size="29" fill="#c9e8fb">Tus contraseñas, en tu servidor.</text>
+  </g>
+  <g transform="translate(560 378)">
+    <rect width="290" height="62" rx="31" fill="#fff" fill-opacity=".1" stroke="#fff" stroke-opacity=".15"/>
+    <circle cx="35" cy="31" r="10" fill="#66d0ff"/>
+    <text x="58" y="40" font-family="Inter,Segoe UI,sans-serif" font-size="23" fill="#eef8ff">Bóveda privada</text>
+  </g>
+  <text x="564" y="540" font-family="Inter,Segoe UI,sans-serif" font-size="22" letter-spacing="4" fill="#a9cfe7">ALCOIT APP STORE</text>
+</svg>

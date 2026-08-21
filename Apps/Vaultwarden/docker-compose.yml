@@ -1,0 +1,67 @@
+name: vaultwarden
+services:
+  vaultwarden:
+    image: vaultwarden/server:1.36.0
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      SIGNUPS_ALLOWED: "${SIGNUPS_ALLOWED:-true}"
+      INVITATIONS_ALLOWED: "${INVITATIONS_ALLOWED:-true}"
+      SHOW_PASSWORD_HINT: "${SHOW_PASSWORD_HINT:-false}"
+    ports:
+      - target: 80
+        published: "8082"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/vaultwarden
+        target: /data
+    x-casaos:
+      envs:
+        - container: SIGNUPS_ALLOWED
+          description:
+            en_US: Allows account creation. Turn it off after creating your first account.
+            es_ES: Permite crear cuentas. Desactívalo después de crear tu primera cuenta.
+        - container: INVITATIONS_ALLOWED
+          description:
+            en_US: Allows existing users to invite other people.
+            es_ES: Permite que los usuarios existentes inviten a otras personas.
+        - container: SHOW_PASSWORD_HINT
+          description:
+            en_US: Shows password hints in emails. Disabled for better privacy.
+            es_ES: Muestra pistas de contraseña en los correos. Está desactivado para mayor privacidad.
+      ports:
+        - container: "80"
+          description:
+            en_US: Vaultwarden web interface. Configure HTTPS before storing real passwords.
+            es_ES: Interfaz web de Vaultwarden. Configura HTTPS antes de guardar contraseñas reales.
+      volumes:
+        - container: /data
+          description:
+            en_US: Encrypted vault data and persistent configuration.
+            es_ES: Datos de la bóveda y configuración persistente.
+x-casaos:
+  id: com.alcoit.vaultwarden
+  version: "1.36.0"
+  architectures:
+    - amd64
+    - arm64
+  main: vaultwarden
+  author: AlcoIT Software
+  category: Security
+  description:
+    en_US: Lightweight password manager compatible with Bitwarden applications. HTTPS is required for secure use.
+    es_ES: Gestor de contraseñas ligero compatible con las aplicaciones de Bitwarden. Requiere HTTPS para un uso seguro.
+  developer: Vaultwarden
+  icon: https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/Vaultwarden/icon.png
+  index: /
+  port_map: "8082"
+  scheme: http
+  tagline:
+    en_US: Keep your passwords on your own server.
+    es_ES: Guarda tus contraseñas en tu propio servidor.
+  thumbnail: https://cdn.jsdelivr.net/gh/AlcoIT-Software/alcoit-homelab-catalog@main/Apps/Vaultwarden/thumbnail.svg
+  title:
+    en_US: Vaultwarden
+    es_ES: Vaultwarden
