@@ -17,7 +17,7 @@ services:
     command:
       - |
         if [ ! -f /etc/alcoit-gateway/Caddyfile ]; then
-          printf '%s\n' ':443 {' '  tls internal' '  respond "AlcoIT Secure Gateway is waiting for HomeApp configuration." 503' '}' > /etc/alcoit-gateway/Caddyfile
+          printf '%s\n' ':443 {' '  tls internal' '  header Content-Type "text/html; charset=utf-8"' '  respond "<!doctype html><html lang=es><head><meta charset=utf-8><title>AlcoIT Secure Gateway</title></head><body><h1>AlcoIT Secure Gateway</h1><p>La puerta de enlace está instalada. Abre HomeApp para seleccionar las aplicaciones protegidas.</p></body></html>" 200' '}' > /etc/alcoit-gateway/Caddyfile
         fi
         exec caddy run --config /etc/alcoit-gateway/Caddyfile --adapter caddyfile
     ports:
@@ -69,7 +69,8 @@ x-casaos:
     es_ES: Puerta de enlace HTTPS local compartida que HomeApp configura para todas las aplicaciones protegidas.
   developer: Caddy
   icon: https://cdn.jsdelivr.net/gh/AlcoIT-Software/alcoit-homelab-catalog@main/Apps/AlcoIT-Secure-Gateway/icon.svg
-  index: /
+  hostname: github.com
+  index: /AlcoIT-Software/alcoit-homelab-catalog/tree/main/Apps/AlcoIT-Secure-Gateway
   port_map: "443"
   scheme: https
   tagline:

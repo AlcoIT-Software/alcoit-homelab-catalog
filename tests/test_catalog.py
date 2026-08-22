@@ -128,6 +128,10 @@ class CatalogTests(unittest.TestCase):
         self.assertIn("target: /etc/alcoit-gateway", app["compose"])
         self.assertIn("read_only: true", app["compose"])
         self.assertIn("no-new-privileges:true", app["compose"])
+        self.assertIn("AlcoIT Secure Gateway</h1>", app["compose"])
+        self.assertIn("</html>\" 200", app["compose"])
+        self.assertIn("hostname: github.com", app["compose"])
+        self.assertIn("/Apps/AlcoIT-Secure-Gateway", app["compose"])
         self.assertNotIn("/var/run/docker.sock", app["compose"])
         self.assertEqual(app["compose"].count("image:"), 1)
 
